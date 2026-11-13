@@ -34,10 +34,12 @@ export class ApiController {
   private readonly logger = new Logger(ApiController.name);
   private readonly catalogo: string;
   private readonly licencias: string;
+  private readonly eventos: string;
 
   constructor(config: ConfigService) {
     this.catalogo = config.getOrThrow<string>('CATALOGO_URL');
     this.licencias = config.getOrThrow<string>('LICENCIAS_URL');
+    this.eventos = config.getOrThrow<string>('EVENTOS_URL');
   }
 
   @Get('catalogo')
@@ -94,5 +96,11 @@ export class ApiController {
     @Body() body: unknown,
   ) {
     return reenviar(this.licencias, 'DELETE', `/licencias/${licenciaId}`, auth, body);
+  }
+
+  @Get('panel/en-vivo')
+  @Roles('administradores')
+  panelEnVivo(@Headers('authorization') auth: string) {
+    return reenviar(this.eventos, 'GET', '/panel/en-vivo', auth);
   }
 }
